@@ -44,7 +44,7 @@ class TwitchBot(IRCClient):
                 if "func" in filters and filters["func"](sender) is False:
                     continue
                 bot_log.info(f"{sender.username} performed {message} args({args})")
-                asyncio.create_task(message_handler["function"](sender, args))
+                await asyncio.create_task(message_handler["function"](sender, args))
                 await asyncio.sleep(0.1)
                 return True
         return None
@@ -53,7 +53,7 @@ class TwitchBot(IRCClient):
         bot_log.info("Connecting to Twitch server...")
         await self.connect()
         await self.join_channel(self._channel)
-        asyncio.create_task(self._scheduler.run())
+        await asyncio.create_task(self._scheduler.run())
         while True:
             resp = await self.get_response()
             if "PRIVMSG" in resp:

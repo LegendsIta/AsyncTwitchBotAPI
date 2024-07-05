@@ -8,7 +8,7 @@ class Subscription:
         self._month = month
 
     @staticmethod
-    def from_response(resp) -> Type["Subscription"]:
+    def from_response(resp) -> "Subscription":
         has_sub = bool(int(re.search("subscriber=(.*?);", resp).group(1)))
         sub_months = re.search("@badge-info=subscriber\/(.*?);", resp)
         if sub_months:

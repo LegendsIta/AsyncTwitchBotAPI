@@ -1,4 +1,5 @@
 import re
+
 from twitchbot.types import Subscription
 
 
@@ -36,7 +37,7 @@ class Sender:
         return self._message
 
     @property
-    def subscription(self) -> "Subscription":
+    def subscription(self) -> Subscription:
         return self._subscription
 
     @property
