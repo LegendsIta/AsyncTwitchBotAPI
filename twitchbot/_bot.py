@@ -69,7 +69,8 @@ class TwitchBot(IRCClient):
             else:
                 bot_log.info(resp)
 
-    def _handle_task_result(self, task):
+    @staticmethod
+    def _handle_task_result(task):
         try:
             task.result()
         except Exception as e:
