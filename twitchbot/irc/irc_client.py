@@ -31,15 +31,13 @@ class IRCClient:
             await self._writer.drain()
 
     async def get_response(self):
-        if not self._is_connected():
-            raise NotConnectedError()
         try:
             if self._reader is None:
                 raise NotConnectedError()
 
             data = await self._reader.read(2028)
 
-            data = data.decode("utf-8")
+            data = data.decode()
 
             if "PING :tmi.twitch.tv" in data:
                 await self._send_pong()
@@ -67,9 +65,6 @@ class IRCClient:
             logger.error(f"Error while sending message: {e}")
 
     async def _send_pong(self):
-        if not self._is_connected():
-            raise NotConnectedError()
-
         try:
             if self._writer is None:
                 raise NotConnectedError()
@@ -81,10 +76,6 @@ class IRCClient:
             logger.error(f"Error while sending message: {e}")
 
     async def join_channel(self, channel: str):
-        await self.connect()  # Assicurati che la connessione sia attiva prima di procedere
-        if not self._is_connected():
-            raise NotConnectedError()
-
         try:
             if self._writer is None:
                 raise NotConnectedError()
@@ -97,9 +88,6 @@ class IRCClient:
             logger.error(f"Error while joining channel: {e}")
 
     async def quit_channel(self):
-        if not self._is_connected():
-            raise NotConnectedError()
-
         try:
             if self._writer is None:
                 raise NotConnectedError()

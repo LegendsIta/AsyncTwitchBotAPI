@@ -1,6 +1,5 @@
 from twitchbot.irc import IRCClient
 from twitchbot._scheduler import Scheduler
-
 import logging
 import asyncio
 from twitchbot.types import Sender
@@ -44,7 +43,8 @@ class TwitchBot(IRCClient):
                 if "func" in filters and filters["func"](sender) is False:
                     continue
                 bot_log.info(f"{sender.username} performed {message} args({args})")
-                await asyncio.create_task(message_handler["function"](sender, args))
+                task = asyncio.create_task(message_handler["function"](sender, args))
+                task.add_done_callback(self._handle_task_result)
                 await asyncio.sleep(0.1)
                 return True
         return None
@@ -53,7 +53,8 @@ class TwitchBot(IRCClient):
         bot_log.info("Connecting to Twitch server...")
         await self.connect()
         await self.join_channel(self._channel)
-        await asyncio.create_task(self._scheduler.run())
+        task = asyncio.create_task(self._scheduler.run())
+        task.add_done_callback(self._handle_task_result)
         while True:
             resp = await self.get_response()
             if "PRIVMSG" in resp:
@@ -67,6 +68,12 @@ class TwitchBot(IRCClient):
 
             else:
                 bot_log.info(resp)
+
+    def _handle_task_result(self, task):
+        try:
+            task.result()
+        except Exception as e:
+            bot_log.error(f'Task raised an exception: {e}')
 
     def run(self):
         bot_log.info("Runnig TwitchBOT...")
