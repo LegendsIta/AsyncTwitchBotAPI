@@ -19,10 +19,5 @@ async def test_basic(sender: Sender, args):
     await bot.send_message(sender.username + " performed a basic command!")
 
 
-@bot.scheduler.schedule_task(60, -1)
-async def test_schedule():
-    await bot.send_message("Basic scheduled messages...")
-
-
 if __name__ == "__main__":
     bot.run()
