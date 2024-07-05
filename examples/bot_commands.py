@@ -23,5 +23,6 @@ async def test_basic(sender: Sender, args):
 async def test_schedule():
     await bot.send_message("Basic scheduled messages...")
 
+
 if __name__ == "__main__":
     bot.run()

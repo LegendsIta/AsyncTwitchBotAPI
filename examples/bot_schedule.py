@@ -17,5 +17,6 @@ async def every_minute_schedule():
 async def other_schedule_with_max_repeat():
     await bot.send_message("This schedule is executed every 10 seconds only 5 times.")
 
+
 if __name__ == "__main__":
     bot.run()

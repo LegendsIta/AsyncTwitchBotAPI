@@ -43,7 +43,7 @@ class IRCClient:
                 await self._send_pong()
             elif "Welcome, GLHF!" in data:
                 logger.info("connected!")
-            else:
+            elif ":tmi.twitch.tv CAP * ACK :twitch.tv/tags" not in data:
                 return data
         except asyncio.TimeoutError:
             pass

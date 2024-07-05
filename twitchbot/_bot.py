@@ -37,24 +37,29 @@ class TwitchBot(IRCClient):
     def message_handler(self, messages: list = None, func=None):
         def decorator(handler):
             nonlocal messages
-            if messages is None:
-                messages = [handler.__name__]
             self._messages_handlers.append(self._build_handler_dict(handler, commands=messages, func=func))
             return handler
 
         return decorator
 
-    async def _call_handlers(self, sender: Sender, message: str = None, args: list = None):
+    async def _call_handlers(self, sender: Sender, args: list[str]):
+        cmd = args[0]
+        cmd_args = args[1:]
         for message_handler in self._messages_handlers:
             filters = message_handler["filters"]
-            if message in filters["commands"]:
+            if ("commands" in filters and cmd in filters["commands"]) or not "commands" in filters:
                 if "func" in filters and filters["func"](sender) is False:
                     continue
-                bot_log.info(f"{sender.username} performed {message} args({args})")
-                task = asyncio.create_task(message_handler["function"](sender, args))
+                if "commands" in filters:
+                    bot_log.info(f"{sender.username} performed {message_handler['function'].__name__}(!{cmd}) args({cmd_args})")
+                else:
+                    bot_log.info(f"{sender.username} performed {message_handler['function'].__name__} with {args}")
+
+                task = asyncio.create_task(message_handler["function"](sender, cmd_args if "commands" in filters else args))
                 task.add_done_callback(self._handle_task_result)
                 await asyncio.sleep(0.1)
                 return True
+
         return None
 
     async def _run_task(self):
@@ -67,14 +72,12 @@ class TwitchBot(IRCClient):
             resp = await self.get_response()
             if "PRIVMSG" in resp:
                 sender = Sender(resp)
-                data = sender.message.rstrip().split(" ")
-                if data and len(data) > 0:
-                    cmd = data[0]
-                    args = data[1:]
-                    if not await self._call_handlers(sender, cmd.lower(), args):
+                args = sender.message.rstrip().split(" ")
+                if args and len(args) > 0:
+                    if not await self._call_handlers(sender, args):
                         chat_log.info(sender.username + ": " + sender.message)
 
-            else:
+            elif len(resp) > 0:
                 bot_log.info(resp)
 
     @staticmethod
