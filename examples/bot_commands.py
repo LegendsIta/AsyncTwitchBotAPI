@@ -6,7 +6,7 @@ USERNAME = "YOUR_USERNAME"
 OAUTH = "OAUTH"
 CHANNEL_NAME = "INSERT_CHANNEL_NAME"
 
-bot = TwitchBot(USERNAME, OAUTH, "CHANNEL_NAME")
+bot = TwitchBot(USERNAME, OAUTH, CHANNEL_NAME)
 
 
 @bot.message_handler(messages=["!test", "!alias1", "!alias2"], func=lambda sender: sender.username == USERNAME)
@@ -16,7 +16,7 @@ async def test_filtered(sender: Sender, args):
 
 @bot.message_handler(messages=["!command"])
 async def test_basic(sender: Sender, args):
-    await bot.send_message("Test basic command!")
+    await bot.send_message(sender.username + " performed a basic command!")
 
 
 @bot.scheduler.schedule_task(60, -1)

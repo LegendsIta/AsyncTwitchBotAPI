@@ -5,7 +5,7 @@ USERNAME = "YOUR_USERNAME"
 OAUTH = "OAUTH"
 CHANNEL_NAME = "INSERT_CHANNEL_NAME"
 
-bot = TwitchBot(USERNAME, OAUTH, "CHANNEL_NAME")
+bot = TwitchBot(USERNAME, OAUTH, CHANNEL_NAME)
 
 
 @bot.scheduler.schedule_task(60, -1)
