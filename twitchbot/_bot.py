@@ -3,6 +3,8 @@ from twitchbot._scheduler import Scheduler
 import logging
 import asyncio
 from twitchbot.types import Sender
+import signal
+
 
 bot_log = logging.getLogger("TwitchBOT")
 chat_log = logging.getLogger("TwitchCHAT")
@@ -14,6 +16,12 @@ class TwitchBot(IRCClient):
         self._channel = channel
         self._messages_handlers = []
         self._scheduler = Scheduler()
+        self._running = False
+        signal.signal(signal.SIGINT, lambda s, f: asyncio.create_task(self._sigint_sigterm_handler(s, f)))
+        signal.signal(signal.SIGTERM, lambda s, f: asyncio.create_task(self._sigint_sigterm_handler(s, f)))
+
+    async def _sigint_sigterm_handler(self, signal, frame):
+        await self.stop()
 
     @property
     def scheduler(self):
@@ -55,7 +63,7 @@ class TwitchBot(IRCClient):
         await self.join_channel(self._channel)
         task = asyncio.create_task(self._scheduler.run())
         task.add_done_callback(self._handle_task_result)
-        while True:
+        while self._running:
             resp = await self.get_response()
             if "PRIVMSG" in resp:
                 sender = Sender(resp)
@@ -77,7 +85,17 @@ class TwitchBot(IRCClient):
             bot_log.error(f'Task raised an exception: {e}')
 
     def run(self):
+        self._running = True
         bot_log.info("Runnig TwitchBOT...")
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self._run_task())
-        bot_log.info("TwithBot closed!")
+
+    async def stop(self):
+        bot_log.info("Stopping TwitchBOT...")
+        self._running = False
+        self.scheduler.stop()
+        await self.disconnect()  # Wait for IRC disconnect to complete
+        # Ensure all scheduled tasks are properly awaited
+        tasks = [task() for task in self._scheduler._scheduled_tasks]  # Assuming Scheduler exposes tasks properly
+        await asyncio.gather(*tasks)
+        asyncio.get_event_loop().stop()

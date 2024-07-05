@@ -103,6 +103,24 @@ class IRCClient:
         except Exception as e:
             logger.error(f"Error while quitting channel: {e}")
 
+    async def disconnect(self):
+        try:
+            if self._writer:
+                self._writer.write("QUIT\n".encode("utf-8"))
+                await self._writer.drain()
+                self._writer.close()
+                await self._writer.wait_closed()
+                self._writer = None
+            if self._reader:
+                self._reader.feed_eof()
+                self._reader = None
+            if self._sock:
+                self._sock.close()
+                self._sock = None
+            logger.info("Disconnected from Twitch IRC server.")
+        except Exception as e:
+            logger.error(f"Error while disconnecting: {e}")
+
 
 class IsNotInChannelError(Exception):
     def __init__(self):
