@@ -13,7 +13,7 @@ This library was created for hobby purposes, no guarantee is given for the secur
 <br>
 Feel free to modify this library to your liking!
 <br>
-I take no responsibility for any damage or misuse caused by this library.
+<b>I take no responsibility for any damage or misuse caused by this library.</b>
 
 ## Author
 * [LegedsIta](https://github.com/LegendsIta)
