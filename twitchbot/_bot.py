@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-#
-# AsyncTwitchBotApi is a library that enables you to create Twitch chatbots with customizable commands,
-# filters for execution, and scheduled automatic messages using IRC integration.
-#
-# Author: LegendsIta <https://github.com/LegendsIta>
-#
-"""This module provides a Twitch chatbot with message handling and scheduling capabilities."""
+"""
+AsyncTwitchBotApi is a library that enables you to create Twitch chatbots with customizable commands,
+filters for execution, and scheduled automatic messages using IRC integration.
+
+Author: LegendsIta <https://github.com/LegendsIta>
+
+This module provides a Twitch chatbot with message handling and scheduling capabilities.
+"""
 
 from twitchbot.irc import IRCClient
 from twitchbot._scheduler import Scheduler
