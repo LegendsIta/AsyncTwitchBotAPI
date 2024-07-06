@@ -8,4 +8,5 @@ AsyncTwitchBotApi is a Python library that enables you to create Twitch chatbots
 - Implement filters for message handling based on sender information.
 - Schedule tasks for automatic execution at specified intervals.
 
-##Author * [LegedsIta](https://github.com/LegendsIta)
+## Author
+* [LegedsIta](https://github.com/LegendsIta)
